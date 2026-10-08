@@ -1,0 +1,296 @@
+from django.db import models
+
+
+class ConfigurazioneApplicazione(models.Model):
+    nome_app = models.CharField(
+        "Nome applicazione",
+        max_length=150,
+        default="ANNCSU",
+    )
+
+    titolo_browser = models.CharField(
+        "Titolo browser",
+        max_length=200,
+        default="ANNCSU",
+    )
+
+    intestazione = models.CharField(
+        "Intestazione",
+        max_length=250,
+        default="Consultazione ANNCSU",
+    )
+
+    sottotitolo = models.CharField(
+        "Sottotitolo",
+        max_length=500,
+        blank=True,
+        default="",
+    )
+
+    footer = models.CharField(
+        "Footer",
+        max_length=500,
+        blank=True,
+        default="",
+    )
+
+    logo = models.ImageField(
+        "Logo",
+        upload_to="branding/",
+        blank=True,
+        null=True,
+    )
+
+    codice_belfiore_default = models.CharField(
+        "Codice Belfiore predefinito",
+        max_length=4,
+        blank=True,
+        default="",
+        help_text="Codice Belfiore proposto automaticamente nelle ricerche.",
+    )
+
+    attiva = models.BooleanField(
+        "Configurazione attiva",
+        default=True,
+    )
+
+    aggiornata_il = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        verbose_name = "Configurazione applicazione"
+        verbose_name_plural = "Configurazione applicazione"
+
+    def __str__(self):
+        return self.nome_app
+
+
+class ConfigurazionePDND(models.Model):
+    attiva = models.BooleanField(
+        "Configurazione attiva",
+        default=False,
+    )
+
+    client_id = models.CharField(
+        "Client ID",
+        max_length=200,
+        blank=True,
+        default="",
+    )
+
+    purpose_id = models.CharField(
+        "Purpose ID",
+        max_length=200,
+        blank=True,
+        default="",
+    )
+
+    kid = models.CharField(
+        "Key ID (kid)",
+        max_length=200,
+        blank=True,
+        default="",
+    )
+
+    iss = models.CharField(
+        "Issuer (iss)",
+        max_length=200,
+        blank=True,
+        default="",
+        help_text="Normalmente coincide con il client_id.",
+    )
+
+    sub = models.CharField(
+        "Subject (sub)",
+        max_length=200,
+        blank=True,
+        default="",
+        help_text="Normalmente coincide con il client_id.",
+    )
+
+    audience_assertion = models.CharField(
+        "Audience client assertion",
+        max_length=500,
+        default="auth.interop.pagopa.it/client-assertion",
+    )
+
+    url_token = models.URLField(
+        "URL token PDND",
+        max_length=500,
+        default="https://auth.interop.pagopa.it/token.oauth2",
+    )
+
+    audience_eservice = models.CharField(
+        "Audience e-service",
+        max_length=500,
+        blank=True,
+        default="",
+    )
+
+    base_url_eservice = models.URLField(
+        "Base URL e-service ANNCSU",
+        max_length=500,
+        default=(
+            "https://modipa.agenziaentrate.gov.it/"
+            "govway/rest/in/AgenziaEntrate-PDND/"
+            "anncsu-consultazione/v1"
+        ),
+    )
+
+    percorso_chiave_privata = models.CharField(
+        "Percorso chiave privata",
+        max_length=500,
+        default="/run/secrets/pdnd_private_key.pem",
+    )
+
+    algoritmo_jwt = models.CharField(
+        "Algoritmo JWT",
+        max_length=20,
+        default="RS256",
+    )
+
+    tipo_jwt = models.CharField(
+        "Tipo JWT",
+        max_length=20,
+        default="JWT",
+    )
+
+    timeout = models.PositiveIntegerField(
+        "Timeout chiamate",
+        default=30,
+    )
+
+    limite_richieste_giornaliere = models.PositiveIntegerField(
+        default=100,
+        verbose_name="Limite richieste ANNCSU giornaliere",
+        help_text=(
+            "Limite giornaliero previsto dall'e-service ANNCSU. "
+            "Utilizzato esclusivamente per il contatore informativo."
+        ),
+    )
+
+    cache_accessi_ore = models.PositiveSmallIntegerField(
+        default=24,
+        verbose_name="Cache elenco accessi (ore)",
+        help_text=(
+            "Durata della cache dell'elenco completo "
+            "degli accessi di una via."
+        ),
+    )
+
+    cache_dettaglio_accesso_ore = models.PositiveSmallIntegerField(
+        default=24,
+        verbose_name="Cache dettaglio accesso (ore)",
+        help_text=(
+            "Durata della cache del dettaglio "
+            "di un singolo accesso."
+        ),
+    )
+
+    aggiornata_il = models.DateTimeField(
+        auto_now=True,
+    )
+
+    class Meta:
+        verbose_name = "Configurazione PDND"
+        verbose_name_plural = "Configurazione PDND"
+
+    def __str__(self):
+        stato = "attiva" if self.attiva else "non attiva"
+        return f"Configurazione PDND ({stato})"
+
+
+class CacheANNCSU(models.Model):
+    """
+    Cache persistente delle risposte ANNCSU.
+
+    risposta_json contiene la risposta integrale restituita dal servizio,
+    senza selezionare o scartare campi.
+    """
+
+    TIPO_ODONIMI = "odonimi"
+    TIPO_AREA = "area"
+    TIPO_ACCESSI = "accessi"
+    TIPO_ACCESSO = "accesso"
+
+    TIPO_CHOICES = (
+        (TIPO_ODONIMI, "Ricerca odonimi"),
+        (TIPO_AREA, "Dettaglio area"),
+        (TIPO_ACCESSI, "Elenco completo accessi"),
+        (TIPO_ACCESSO, "Dettaglio accesso"),
+    )
+
+    tipo = models.CharField(
+        max_length=30,
+        choices=TIPO_CHOICES,
+        db_index=True,
+    )
+
+    chiave = models.CharField(
+        max_length=255,
+        unique=True,
+    )
+
+    richiesta_json = models.JSONField(
+        default=dict,
+        blank=True,
+    )
+
+    risposta_json = models.JSONField()
+
+    creata_il = models.DateTimeField(
+        auto_now_add=True,
+    )
+
+    aggiornata_il = models.DateTimeField(
+        auto_now=True,
+    )
+
+    scade_il = models.DateTimeField(
+        db_index=True,
+    )
+
+    ultimo_accesso = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+
+    numero_hit = models.PositiveBigIntegerField(
+        default=0,
+    )
+
+    class Meta:
+        ordering = ("-aggiornata_il",)
+        verbose_name = "Cache ANNCSU"
+        verbose_name_plural = "Cache ANNCSU"
+
+    def __str__(self):
+        return f"{self.tipo}: {self.chiave}"
+
+
+class ContatoreRichiesteANNCSU(models.Model):
+    giorno = models.DateField(
+        unique=True,
+        db_index=True,
+        verbose_name="Giorno",
+    )
+
+    richieste = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Richieste effettuate",
+    )
+
+    ultima_richiesta = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Ultima richiesta",
+    )
+
+    class Meta:
+        ordering = ("-giorno",)
+        verbose_name = "Contatore richieste ANNCSU"
+        verbose_name_plural = "Contatori richieste ANNCSU"
+
+    def __str__(self):
+        return f"{self.giorno}: {self.richieste}"

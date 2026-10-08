@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+
+<h1>Ricerca per progressivo nazionale</h1>
+
+<p>
+    Cerca direttamente un'area di circolazione
+    o un accesso ANNCSU.
+</p>
+
+</div>
+
+
+<div class="panel">
+
+<form method="post">
+{% csrf_token %}
+
+<div class="form-grid">
+
+<div class="form-group">
+<label>{{ form.tipo.label }}</label>
+{{ form.tipo }}
+</div>
+
+<div class="form-group form-group-wide">
+<label>{{ form.progressivo.label }}</label>
+{{ form.progressivo }}
+</div>
+
+</div>
+
+<div class="form-actions">
+
+<button
+    class="btn btn-primary"
+    type="submit"
+>
+    Cerca
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+
+{% if risultato %}
+
+<div class="detail-card">
+
+<h2>Risultato</h2>
+
+<dl class="detail-list">
+
+{% if tipo == "area" %}
+
+<dt>Tipo</dt>
+<dd>{{ risultato.dug|default:"-" }}</dd>
+
+<dt>Denominazione</dt>
+<dd>
+    {% firstof risultato.duf risultato.denomuff "-" %}
+</dd>
+
+<dt>Progressivo nazionale</dt>
+<dd>{{ risultato.prognaz|default:"-" }}</dd>
+
+<dt>Codice comunale</dt>
+<dd>{{ risultato.cododocomunale|default:"-" }}</dd>
+
+<dt>Località</dt>
+<dd>{{ risultato.denomloc|default:"-" }}</dd>
+
+{% else %}
+
+<dt>Strada</dt>
+<dd>
+    {{ risultato.dug }}
+    {% firstof risultato.duf risultato.denomuff %}
+</dd>
+
+<dt>Civico</dt>
+<dd>{{ risultato.civico|default:"-" }}</dd>
+
+<dt>Esponente</dt>
+<dd>{{ risultato.esp|default:"-" }}</dd>
+
+<dt>Specificità</dt>
+<dd>{{ risultato.specif|default:"-" }}</dd>
+
+<dt>Progressivo accesso</dt>
+<dd>{{ risultato.prognazacc|default:"-" }}</dd>
+
+<dt>Coordinate</dt>
+<dd>{{ risultato.coord|default:"-" }}</dd>
+
+{% endif %}
+
+</dl>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

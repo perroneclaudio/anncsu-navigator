@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>Scheda accesso</h1>
+</div>
+
+{% if accesso %}
+
+<div class="detail-grid">
+
+<div class="detail-card">
+
+<h2>Area di circolazione</h2>
+
+<dl class="detail-list">
+
+<dt>Tipo</dt>
+<dd>{{ accesso.dug|default:"-" }}</dd>
+
+<dt>Denominazione</dt>
+<dd>{% firstof accesso.duf accesso.denomuff "-" %}</dd>
+
+<dt>Località</dt>
+<dd>{{ accesso.denomloc|default:"-" }}</dd>
+
+<dt>Progressivo area</dt>
+<dd>{{ accesso.prognaz|default:"-" }}</dd>
+
+<dt>Codice comunale area</dt>
+<dd>{{ accesso.cododocomunale|default:"-" }}</dd>
+
+<dt>Denominazione lingua 1</dt>
+<dd>{{ accesso.denomlingua1|default:"-" }}</dd>
+
+<dt>Denominazione lingua 2</dt>
+<dd>{{ accesso.denomlingua2|default:"-" }}</dd>
+
+</dl>
+
+</div>
+
+
+<div class="detail-card">
+
+<h2>Accesso civico</h2>
+
+<dl class="detail-list">
+
+<dt>Civico</dt>
+<dd>{{ accesso.civico|default:"-" }}</dd>
+
+<dt>Esponente</dt>
+<dd>{{ accesso.esp|default:"-" }}</dd>
+
+<dt>Specificità</dt>
+<dd>{{ accesso.specif|default:"-" }}</dd>
+
+<dt>Metrico</dt>
+<dd>{{ accesso.metrico|default:"-" }}</dd>
+
+<dt>Progressivo nazionale accesso</dt>
+<dd>{{ accesso.prognazacc|default:"-" }}</dd>
+
+<dt>Codice comunale accesso</dt>
+<dd>{{ accesso.codacccomunale|default:"-" }}</dd>
+
+</dl>
+
+</div>
+
+
+<div class="detail-card">
+
+<h2>Posizione</h2>
+
+<dl class="detail-list">
+
+<dt>Coordinata X</dt>
+<dd>{{ accesso.coordX|default:"-" }}</dd>
+
+<dt>Coordinata Y</dt>
+<dd>{{ accesso.coordY|default:"-" }}</dd>
+
+<dt>Quota</dt>
+<dd>{{ accesso.quota|default:"-" }}</dd>
+
+<dt>Metodo</dt>
+<dd>{{ accesso.metodo|default:"-" }}</dd>
+
+</dl>
+
+</div>
+
+</div>
+
+{% else %}
+
+<div class="panel">
+    Accesso non trovato.
+</div>
+
+{% endif %}
+
+{% endblock %}

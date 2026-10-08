@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>Ricerca indirizzo</h1>
+
+    <p>
+        Cerca la strada, seleziona l'area di circolazione
+        corretta e consulta il civico.
+    </p>
+</div>
+
+
+<div class="panel">
+
+<form method="get">
+
+<div class="form-grid">
+
+    <div class="form-group">
+        <label>{{ form.codcom.label }}</label>
+        {{ form.codcom }}
+    </div>
+
+    <div class="form-group form-group-wide">
+        <label>{{ form.denomparz.label }}</label>
+        {{ form.denomparz }}
+    </div>
+
+    <div class="form-group">
+        <label>{{ form.civico.label }}</label>
+        {{ form.civico }}
+    </div>
+
+</div>
+
+<div class="form-actions">
+    <button
+        class="btn btn-primary"
+        type="submit"
+    >
+        Cerca strada
+    </button>
+</div>
+
+</form>
+
+</div>
+
+
+{% if strade is not None %}
+
+<div class="panel">
+
+<div class="result-header">
+    <h2>Seleziona la strada</h2>
+
+    <span>
+        {{ strade|length }} risultati
+    </span>
+</div>
+
+{% if strade %}
+
+<div class="table-wrapper">
+
+<table class="data-table">
+
+<thead>
+<tr>
+    <th>Tipo</th>
+    <th>Denominazione</th>
+    <th>Località</th>
+    <th>Progressivo</th>
+    <th></th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for strada in strade %}
+
+<tr>
+
+<td>
+    {{ strada.dug|default:"-" }}
+</td>
+
+<td>
+    <strong>
+        {{ strada.duf|default:"-" }}
+    </strong>
+</td>
+
+<td>
+    {{ strada.denomloc|default:"-" }}
+</td>
+
+<td>
+    {{ strada.prognaz|default:"-" }}
+</td>
+
+<td class="table-action">
+
+<a
+    class="btn-link"
+    href="?codcom={{ form.codcom.value|urlencode }}&denomparz={{ form.denomparz.value|urlencode }}&civico={{ form.civico.value|urlencode }}&prognaz={{ strada.prognaz|urlencode }}&dug={{ strada.dug|urlencode }}&duf={{ strada.duf|urlencode }}&denomloc={{ strada.denomloc|urlencode }}"
+>
+    Seleziona
+</a>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endif %}
+
+</div>
+
+{% endif %}
+
+
+{% if strada_scelta %}
+
+<div class="panel">
+
+<div class="result-header">
+
+<div>
+    <h2>
+        {{ strada_scelta.dug }}
+        {{ strada_scelta.duf }}
+    </h2>
+
+    {% if strada_scelta.denomloc %}
+        <span>
+            {{ strada_scelta.denomloc }}
+        </span>
+    {% endif %}
+</div>
+
+<a
+    class="btn-link"
+    href="?codcom={{ form.codcom.value|urlencode }}&denomparz={{ form.denomparz.value|urlencode }}&civico={{ form.civico.value|urlencode }}"
+>
+    Cambia strada
+</a>
+
+</div>
+
+
+{% if accessi %}
+
+<div class="table-wrapper">
+
+<table class="data-table">
+
+<thead>
+<tr>
+    <th>Civico</th>
+    <th>Esponente</th>
+    <th>Specificità</th>
+    <th>Metrico</th>
+    <th>Progressivo accesso</th>
+    <th></th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for item in accessi %}
+
+<tr>
+
+<td>
+    <strong>
+        {{ item.civico|default:"-" }}
+    </strong>
+</td>
+
+<td>
+    {{ item.esp|default:"-" }}
+</td>
+
+<td>
+    {{ item.specif|default:"-" }}
+</td>
+
+<td>
+    {{ item.metrico|default:"-" }}
+</td>
+
+<td>
+    {{ item.prognazacc|default:"-" }}
+</td>
+
+<td class="table-action">
+
+{% if item.prognazacc %}
+<a
+    class="btn-link"
+    href="{% url 'core:dettaglio_accesso' item.prognazacc %}"
+>
+    Apri
+</a>
+{% endif %}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% else %}
+
+<div class="empty-state">
+    Nessun accesso corrispondente.
+</div>
+
+{% endif %}
+
+</div>
+
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>Verifica indirizzo</h1>
+
+    <p>
+        Verifica la presenza della strada e,
+        opzionalmente, di un accesso civico in ANNCSU.
+    </p>
+</div>
+
+<div class="panel">
+
+<form method="post">
+{% csrf_token %}
+
+<div class="form-grid">
+
+    <div class="form-group">
+        <label>{{ form.codcom.label }}</label>
+        {{ form.codcom }}
+    </div>
+
+    <div class="form-group form-group-wide">
+        <label>{{ form.denominazione.label }}</label>
+        {{ form.denominazione }}
+    </div>
+
+    <div class="form-group">
+        <label>{{ form.civico.label }}</label>
+        {{ form.civico }}
+    </div>
+
+    <div class="form-group">
+        <label>{{ form.esponente.label }}</label>
+        {{ form.esponente }}
+    </div>
+
+    <div class="form-group">
+        <label>{{ form.specificita.label }}</label>
+        {{ form.specificita }}
+    </div>
+
+</div>
+
+<div class="form-actions">
+    <button class="btn btn-primary" type="submit">
+        Verifica
+    </button>
+</div>
+
+</form>
+
+</div>
+
+
+{% if risultato %}
+
+<div class="panel">
+
+<h2>Esito verifica</h2>
+
+<div class="status-list">
+
+    <div class="status-row">
+        <span>Strada</span>
+
+        {% if risultato.strada_esiste %}
+            <strong class="status-ok">
+                Presente in ANNCSU
+            </strong>
+        {% else %}
+            <strong class="status-ko">
+                Non trovata
+            </strong>
+        {% endif %}
+    </div>
+
+    {% if risultato.accesso %}
+
+        <div class="status-row">
+            <span>
+                Accesso {{ risultato.accesso }}
+            </span>
+
+            {% if risultato.accesso_esiste %}
+                <strong class="status-ok">
+                    Presente in ANNCSU
+                </strong>
+
+            {% elif risultato.accesso_esiste == False %}
+                <strong class="status-ko">
+                    Non trovato
+                </strong>
+
+            {% else %}
+                <strong class="status-neutral">
+                    Non verificato
+                </strong>
+            {% endif %}
+        </div>
+
+    {% endif %}
+
+</div>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

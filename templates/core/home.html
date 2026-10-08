@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>
+        {% if APP_CONFIG %}
+            {{ APP_CONFIG.intestazione }}
+        {% else %}
+            Consultazione ANNCSU
+        {% endif %}
+    </h1>
+
+    {% if APP_CONFIG and APP_CONFIG.sottotitolo %}
+        <p>{{ APP_CONFIG.sottotitolo }}</p>
+    {% endif %}
+</div>
+
+<div class="dashboard-grid">
+
+    <a class="dashboard-card" href="{% url 'core:verifica_indirizzo' %}">
+        <div class="card-title">
+            Verifica indirizzo
+        </div>
+
+        <p>
+            Verifica rapidamente se una strada e un numero civico
+            risultano presenti in ANNCSU.
+        </p>
+
+        <span class="card-action">
+            Apri →
+        </span>
+    </a>
+
+    <a class="dashboard-card" href="{% url 'core:ricerca_indirizzo' %}">
+        <div class="card-title">
+            Ricerca indirizzo
+        </div>
+
+        <p>
+            Cerca una strada anche per denominazione parziale e
+            consulta gli accessi associati.
+        </p>
+
+        <span class="card-action">
+            Apri →
+        </span>
+    </a>
+
+    <a class="dashboard-card" href="{% url 'core:esplora_stradario' %}">
+        <div class="card-title">
+            Esplora stradario
+        </div>
+
+        <p>
+            Consulta gli accessi civici, i progressivi nazionali
+            e le coordinate di una strada.
+        </p>
+
+        <span class="card-action">
+            Apri →
+        </span>
+    </a>
+
+    <a class="dashboard-card" href="{% url 'core:ricerca_progressivo' %}">
+        <div class="card-title">
+            Ricerca per progressivo
+        </div>
+
+        <p>
+            Recupera direttamente un'area di circolazione o un
+            accesso tramite progressivo nazionale.
+        </p>
+
+        <span class="card-action">
+            Apri →
+        </span>
+    </a>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>Esplora stradario</h1>
+
+    <p>
+        Cerca un'area di circolazione e consulta
+        gli accessi associati.
+    </p>
+</div>
+
+<div class="panel">
+
+<form method="post">
+{% csrf_token %}
+
+<div class="form-grid">
+
+    <div class="form-group">
+        <label>{{ form.codcom.label }}</label>
+        {{ form.codcom }}
+    </div>
+
+    <div class="form-group form-group-wide">
+        <label>{{ form.denomparz.label }}</label>
+        {{ form.denomparz }}
+    </div>
+
+</div>
+
+<div class="form-actions">
+    <button
+        class="btn btn-primary"
+        name="cerca_strada"
+        type="submit"
+    >
+        Cerca strada
+    </button>
+</div>
+
+</form>
+
+</div>
+
+
+{% if risultati %}
+
+<div class="panel">
+
+<table class="data-table">
+
+<thead>
+<tr>
+    <th>Tipo</th>
+    <th>Denominazione</th>
+    <th>Progressivo</th>
+    <th></th>
+</tr>
+</thead>
+
+<tbody>
+
+{% for item in risultati %}
+
+<tr>
+    <td>{{ item.dug }}</td>
+
+    <td>
+        {% firstof item.duf item.denomuff "-" %}
+    </td>
+
+    <td>
+        {{ item.prognaz }}
+    </td>
+
+    <td>
+        <a
+            class="btn-link"
+            href="{% url 'core:dettaglio_area' item.prognaz %}"
+        >
+            Esplora accessi
+        </a>
+    </td>
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+</div>
+
+{% endif %}
+
+{% endblock %}
